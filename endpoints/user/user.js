@@ -1,12 +1,8 @@
 const express = require('express');
 
-const postRoutes = require('../posts/posts.js');
-
 const User = require('../../data/helpers/userDb.js');
 
 const router = express.Router();
-
-router.use('/:id/posts', postRoutes);
 
 router.get('/', async (req,res) => {
     try{
@@ -33,6 +29,18 @@ router.get('/:id', async (req,res) => {
     }
 });
 
+
+router.get('/:id/posts', async (req,res) => {
+    try{
+        const userId = req.params.id;
+        const posts = await User.getUserPosts(userId);
+        res.status(200).json(posts)
+    } catch (e) {
+        res.status(500).json({ error: `There was an error retrieving posts ${e}` })
+    }
+});
+
+
 router.post('/', async (req,res) => {
     try{
         const newUser = req.body
@@ -42,4 +50,5 @@ router.post('/', async (req,res) => {
         res.status(500).json({ error: "There was an error while saving the User to the database" })
     }
 })
+
 module.exports = router;
